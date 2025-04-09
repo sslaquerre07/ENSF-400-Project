@@ -35,6 +35,11 @@ pipeline{
         // Runs an analysis of the code, looking for any
         // patterns that suggest potential bugs.
         stage('Static Analysis') {
+            agent {
+                docker {
+                    image 'gradle:7.6.1-jdk11'
+                }
+            }
             steps {
                 sh './gradlew sonarqube'
                 // wait for sonarqube to finish its analysis
