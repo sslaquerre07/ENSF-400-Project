@@ -16,13 +16,8 @@ RUN gradle --stop
 # Configure Gradle for non-interactive use
 ENV GRADLE_OPTS="-Dorg.gradle.daemon=false"
 
-# Default SonarQube settings (can be overridden at runtime)
-ENV SONAR_HOST_URL="http://localhost:9000"
-ENV SONAR_LOGIN="admin"
-ENV SONAR_PASSWORD="password"
-
 # Set the entrypoint to run SonarQube analysis
 ENTRYPOINT ["./gradlew", "sonarqube"]
 
 # Default command arguments (can be overridden at runtime)
-CMD ["-Dsonar.host.url=http://localhost:9000", "-Dsonar.login=admin", "-Dsonar.password=password"]
+CMD ["-Dsonar.host.url=http://localhost:9000"]
