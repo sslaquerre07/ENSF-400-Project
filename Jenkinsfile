@@ -19,7 +19,7 @@ pipeline{
         stage('Unit Tests') {
             agent {
                 docker {
-                    image 'gradle:8.5-jdk21'
+                    image 'gradle:7.6.1-jdk11'
                 }
             }
             steps {
