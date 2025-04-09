@@ -8,6 +8,21 @@ pipeline{
     }
 
     stages{
+        // Step to run SonarQube
+        stage('Start SonarQube') {
+            steps {
+                script {
+                    // Pull and run SonarQube
+                    sh 'docker pull sonarqube:9.2-community'
+                    sh 'docker run -d -p 9000:9000 sonarqube:9.2-community'
+                    
+                    // Wait for SonarQube to be ready
+                    echo "Waiting for SonarQube to be ready..."
+                    sleep 30  // Give SonarQube time to start up
+                }
+            }
+        }
+
         // Building the image itself
         stage('Build'){
             steps{
@@ -37,7 +52,7 @@ pipeline{
         stage('Static Analysis') {
             agent {
                 docker {
-                    image 'sonarqube:9.2-community'  // SonarQube 8.x with JDK 11 compatibility
+                    image 'gradle:7.6.1-jdk11'
                 }
             }
             steps {
