@@ -10,20 +10,29 @@ pipeline{
     }
 
     stages{
-        // Building the image itself
-        stage('Docker Build and Push') {
-            agent {
-                docker {
-                    image 'docker:20.10.7-dind'
-                    args '--privileged -v /var/run/docker.sock:/var/run/docker.sock'
-                }
-            }
+        // Stage for building the image
+        stage('Build') {
             steps {
                 script {
-                    sh '''
-                        docker build -t $DOCKER_USER/ensf400-project:$TAG .
-                        docker push $DOCKER_USER/ensf400-project:$TAG
-                    '''
+                    // Build the Docker image
+                    sh 'docker build -t $IMAGE_NAME:$TAG .'
+                }
+            }
+        }
+
+        // Stage for pushing the image to DockerHub
+        stage('Push to DockerHub') {
+            steps {
+                script {
+                    // Use DockerHub credentials (the ID you gave it in Jenkins)
+                    withCredentials([usernamePassword(credentialsId: '59a71b5b-9cc7-4d75-b0ba-449b52a4ee27', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        // Log in to DockerHub using the credentials
+                        sh '''
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                            docker build -t $DOCKER_USER/$IMAGE_NAME:$TAG .
+                            docker push $DOCKER_USER/$IMAGE_NAME:$TAG
+                        '''
+                    }
                 }
             }
         }
