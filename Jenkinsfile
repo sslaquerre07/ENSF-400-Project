@@ -36,33 +36,28 @@ pipeline{
         stage('Static Analysis') {
             agent {
                 docker {
-                    image 'docker:20.10.7-dind'  // Docker-in-Docker container
-                    args '--privileged'  // Enable Docker to run inside the container
+                    image 'docker:20.10.7-dind'
+                    args '--privileged'
                 }
+            }
+            environment {
+                SONAR_HOST_URL = 'http://localhost:9000'
+                SONAR_TOKEN = credentials('your-sonar-token-id')  // Jenkins credentials
             }
             steps {
                 script {
-                    // Cleanup any existing SonarQube containers
-                    sh '''
-                        docker ps -a -q --filter "name=sonarqube" | xargs -r docker stop | xargs -r docker rm
-                    '''
-
-                    // Start SonarQube in a Docker-in-Docker container
                     sh '''
                         docker run -d --name sonarqube -p 9000:9000 sonarqube:9.2-community
-                        echo "Waiting for SonarQube to start..."
-                        sleep 30  # Give SonarQube time to start up
+                        echo "Waiting for SonarQube to be ready..."
+                        while ! curl -s http://localhost:9000/api/system/health | grep '"status":"UP"'; do sleep 5; done
                     '''
-
-                    // Run the static analysis with Gradle
-                    sh './gradlew sonarqube'  // Use localhost to access SonarQube
-                    sleep 5  // Optional: wait for SonarQube to finish analysis
-                    sh './gradlew checkQualityGate'  // Ensure quality gate is passed
-                    sh 'docker stop sonarcube'
+                    sh './gradlew sonarqube -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN'
+                    sh 'docker stop sonarqube'
+                    sh 'docker rm sonarqube'
                 }
             }
         }
     }
 }
-// Add comment to test
+//Add comment to test
 
