@@ -25,4 +25,4 @@ ENV SONAR_PASSWORD="password"
 ENTRYPOINT ["./gradlew", "sonarqube"]
 
 # Default command arguments (can be overridden at runtime)
-CMD ["-Dsonar.host.url=${SONAR_HOST_URL}", "-Dsonar.login=${SONAR_LOGIN}", "-Dsonar.password=${SONAR_PASSWORD}"]
+CMD ["-Dsonar.host.url=http://localhost:9000", "-Dsonar.login=admin", "-Dsonar.password=password"]
