@@ -1,9 +1,5 @@
 pipeline{
-    agent {
-        docker {
-            image 'gradle:8.5-jdk21'  // Gradle image that supports our project with jdk 21
-        }
-    }
+    agent any
 
     // Set environment variables for the image
     environment {
@@ -21,12 +17,17 @@ pipeline{
 
         //Running the tests:
         stage('Unit Tests') {
+            agent {
+                docker {
+                    image 'gradle:8.5-jdk21'
+                }
+            }
             steps {
                 sh './gradlew test'
             }
             post {
                 always {
-                junit 'build/test-results/test/*.xml'
+                    junit 'build/test-results/test/*.xml'
                 }
             }
         }
