@@ -1,4 +1,4 @@
-# Dockerfile.sonarqube-analysis
+# Dockerfile.sonarqube
 FROM gradle:7.6.1-jdk11
 
 # Set working directory
