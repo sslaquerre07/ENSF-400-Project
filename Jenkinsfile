@@ -42,6 +42,11 @@ pipeline{
             }
             steps {
                 script {
+                    // Cleanup any existing SonarQube containers
+                    sh '''
+                        docker ps -a -q --filter "name=sonarqube" | xargs -r docker stop | xargs -r docker rm
+                    '''
+
                     // Start SonarQube in a Docker-in-Docker container
                     sh '''
                         docker run -d --name sonarqube -p 9000:9000 sonarqube:9.2-community
