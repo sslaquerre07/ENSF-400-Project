@@ -9,9 +9,10 @@ pipeline{
 
     stages{
         // Building the image itself
-        stage('Build'){
+        stage('Build & Deploy'){
             steps{
                 sh 'docker build -t $IMAGE_NAME:$TAG .'
+                sh 'docker run -p 8081:8080 -i ensf-400-project'
             }
         }
 
@@ -57,12 +58,6 @@ pipeline{
         //         }
         //     }
         // }
-
-        stage('Deployment'){
-            steps{
-                sh 'docker run -p 8081:8080 -i ensf-400-project'
-            }
-        }
     }
 }
 //Add comment to test
