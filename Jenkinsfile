@@ -1,5 +1,9 @@
 pipeline{
-    agent any
+    agent {
+        docker {
+            image 'gradle:8.5-jdk21'  // Gradle image that supports our project with jdk 21
+        }
+    }
 
     // Set environment variables for the image
     environment {
