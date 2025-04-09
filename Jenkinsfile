@@ -55,6 +55,21 @@ pipeline{
             }
         }
 
+        //Generate and save JavaDocs as an artifact
+        stage('Generate JavaDocs') {
+            agent {
+                docker {
+                    image 'gradle:7.6.1-jdk11'
+                }
+            }
+            steps {
+                // Generate JavaDocs
+                sh './gradlew javadoc'
+                // Archive the generated JavaDocs as build artifacts
+                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/docs/javadoc/**'
+            }
+        }
+
         // Stage for pulling the image and running the application
         stage('Deploy Application') {
             steps {
