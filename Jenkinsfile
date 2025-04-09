@@ -8,21 +8,6 @@ pipeline{
     }
 
     stages{
-        // Step to run SonarQube
-        stage('Start SonarQube') {
-            steps {
-                script {
-                    // Pull and run SonarQube
-                    sh 'docker pull sonarqube:9.2-community'
-                    sh 'docker run -d -p 9000:9000 sonarqube:9.2-community'
-                    
-                    // Wait for SonarQube to be ready
-                    echo "Waiting for SonarQube to be ready..."
-                    sleep 30  // Give SonarQube time to start up
-                }
-            }
-        }
-
         // Building the image itself
         stage('Build'){
             steps{
@@ -47,21 +32,29 @@ pipeline{
             }
         }
 
-        // Runs an analysis of the code, looking for any
-        // patterns that suggest potential bugs.
+        //Use a docker in docker container to run sonarcube (requires localhost connection to work)
         stage('Static Analysis') {
             agent {
                 docker {
-                    image 'gradle:7.6.1-jdk11'
+                    image 'docker:20.10.7-dind'  // Docker-in-Docker container
+                    args '--privileged'  // Enable Docker to run inside the container
                 }
             }
             steps {
-                sh './gradlew sonarqube'
-                // wait for sonarqube to finish its analysis
-                sleep 5
-                sh './gradlew checkQualityGate'
+                script {
+                    // Start SonarQube in a Docker-in-Docker container
+                    sh '''
+                        docker run -d --name sonarqube -p 9000:9000 sonarqube:9.2-community
+                        echo "Waiting for SonarQube to start..."
+                        sleep 30  # Give SonarQube time to start up
+                    '''
+
+                    // Run the static analysis with Gradle
+                    sh './gradlew sonarqube -Dsonar.host.url=$SONARQUBE_URL'  // Use localhost to access SonarQube
+                    sleep 5  // Optional: wait for SonarQube to finish analysis
+                    sh './gradlew checkQualityGate'  // Ensure quality gate is passed
+                }
             }
         }
-
     }
 }
