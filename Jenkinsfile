@@ -37,7 +37,7 @@ pipeline{
         stage('Static Analysis') {
             agent {
                 docker {
-                    image 'gradle:7.6.1-jdk11'
+                    image 'sonarqube:8.9-community'  // SonarQube 8.x with JDK 11 compatibility
                 }
             }
             steps {
