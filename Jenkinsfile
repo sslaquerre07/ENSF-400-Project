@@ -48,11 +48,11 @@ pipeline{
                     '''
 
                     // Start SonarQube in a Docker-in-Docker container
-                    sh '''
-                        docker run -d --name sonarqube -p 9000:9000 sonarqube:9.2-community
-                        echo "Waiting for SonarQube to start..."
-                        sleep 30  # Give SonarQube time to start up
-                    '''
+                    // sh '''
+                    //     docker run -d --name sonarqube -p 9000:9000 sonarqube:9.2-community
+                    //     echo "Waiting for SonarQube to start..."
+                    //     sleep 30  # Give SonarQube time to start up
+                    // '''
 
                     // Run the static analysis with Gradle
                     sh './gradlew sonarqube'  // Use localhost to access SonarQube
