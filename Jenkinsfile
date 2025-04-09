@@ -63,7 +63,7 @@ pipeline{
                         sh '''
                             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                             docker pull $DOCKER_USER/$IMAGE_NAME:$TAG
-                            docker run -it -p 8081:8080 $DOCKER_USER/$IMAGE_NAME:$TAG
+                            docker run -di -p 8081:8080 $DOCKER_USER/$IMAGE_NAME:$TAG
                         '''
                     }
                 }
