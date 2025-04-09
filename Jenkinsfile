@@ -50,7 +50,7 @@ pipeline{
                     '''
 
                     // Run the static analysis with Gradle
-                    sh './gradlew sonarqube -Dsonar.host.url=$SONARQUBE_URL'  // Use localhost to access SonarQube
+                    sh './gradlew sonarqube'  // Use localhost to access SonarQube
                     sleep 5  // Optional: wait for SonarQube to finish analysis
                     sh './gradlew checkQualityGate'  // Ensure quality gate is passed
                 }
