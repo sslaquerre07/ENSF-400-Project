@@ -5,15 +5,29 @@ pipeline{
     environment {
         IMAGE_NAME = 'ensf400-project'
         TAG = 'latest'
+        DOCKER_USER = 'sslaquerre07'
+        DOCKER_PASS = 'Pucky1120!'
     }
 
     stages{
         // Building the image itself
-        stage('Build'){
-            steps{
-                sh 'docker build -t $IMAGE_NAME:$TAG .'
+        stage('Docker Build and Push') {
+            agent {
+                docker {
+                    image 'docker:20.10.7-dind'
+                    args '--privileged -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+            steps {
+                script {
+                    sh '''
+                        docker build -t $DOCKER_USER/ensf400-project:$TAG .
+                        docker push $DOCKER_USER/ensf400-project:$TAG
+                    '''
+                }
             }
         }
+
 
         //Running the tests:
         stage('Unit Tests') {
