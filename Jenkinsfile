@@ -53,6 +53,7 @@ pipeline{
                     sh './gradlew sonarqube'  // Use localhost to access SonarQube
                     sleep 5  // Optional: wait for SonarQube to finish analysis
                     sh './gradlew checkQualityGate'  // Ensure quality gate is passed
+                    sh 'docker stop sonarcube'
                 }
             }
         }
