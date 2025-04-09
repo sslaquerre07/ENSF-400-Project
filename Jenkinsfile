@@ -55,6 +55,21 @@ pipeline{
             }
         }
 
+        // Stage for pulling the image and running the application
+        stage('Deploy Application') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: '59a71b5b-9cc7-4d75-b0ba-449b52a4ee27', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh '''
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                            docker pull $DOCKER_USER/$IMAGE_NAME:$TAG
+                            docker run -p 8081:8080 -i $DOCKER_USER/$IMAGE_NAME:$TAG
+                        '''
+                    }
+                }
+            }
+        }
+
         //Use a docker in docker container to run sonarcube (can't figure out)
         stage('Static Analysis') {
             agent {
