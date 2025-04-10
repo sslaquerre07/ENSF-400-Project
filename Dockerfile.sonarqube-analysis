@@ -1,5 +1,7 @@
 # Dockerfile.sonarqube
+# FROM gradle:7-jdk17
 FROM gradle:7.6.1-jdk11
+
 
 # Set working directory
 WORKDIR /app
@@ -7,11 +9,8 @@ WORKDIR /app
 # Copy project files into the container
 COPY . .
 
-# Make gradlew executable (in case it isn't)
-RUN chmod +x ./gradlew
-
-# Stop any running Gradle daemons
-RUN gradle --stop
+# # Stop any running Gradle daemons
+# RUN gradle --stop
 
 # Configure Gradle for non-interactive use
 ENV GRADLE_OPTS="-Dorg.gradle.daemon=false"
