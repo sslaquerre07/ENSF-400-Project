@@ -55,6 +55,21 @@ pipeline{
             }
         }
 
+        // Security Analysis with OWASP's "DependencyCheck"
+        stage('Dependency Check') {
+            agent {
+                docker {
+                    image 'gradle:7.6.1-jdk11'
+                }
+            }
+            steps {
+                script {
+                    // Run OWASP Dependency-Check for security analysis
+                    sh './gradlew dependencyCheckAnalyze'
+                }
+            }
+        }
+
         //Generate and save JavaDocs as an artifact
         stage('Generate JavaDocs') {
             agent {
