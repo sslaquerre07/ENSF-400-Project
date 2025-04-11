@@ -164,64 +164,11 @@ pipeline {
                     steps {
                         script {
                             sh "./gradlew sonarqube -Dsonar.host.url=http://${IP_ADDRESS}:9000"
-
-                            // Wait for SonarQube to process results
-                            sh 'sleep 10'
-
-                            // Generate HTML report from SonarQube API
-                            sh """
-                # Create HTML report
-                echo '<html><head><title>SonarQube Analysis Report</title>' > sonar-report.html
-                echo '<style>body{font-family:Arial;} .metric{margin:15px;padding:15px;border:1px solid #ccc;border-radius:5px;} .good{background:#e7f6e7;} .bad{background:#f6e7e7;}</style>' >> sonar-report.html
-                echo '</head><body><h1>SonarQube Analysis Report</h1>' >> sonar-report.html
-
-                # Fetch project key
-                PROJECT_KEY=\$(curl -s -u admin:password "http://${IP_ADDRESS}:9000/api/projects/search" | grep -o '"key":"[^"]*"' | head -1 | cut -d'"' -f4)
-                echo "<h2>Project: \$PROJECT_KEY</h2>" >> sonar-report.html
-
-                # Get metrics and add to HTML
-                curl -s -u admin:password "http://${IP_ADDRESS}:9000/api/measures/component?component=\$PROJECT_KEY&metricKeys=bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density,security_hotspots" > metrics.json
-
-                # Parse metrics with grep and generate HTML
-                echo '<div class="metrics">' >> sonar-report.html
-                grep -o '"metric":"[^"]*","value":"[^"]*"' metrics.json | while read -r line; do
-                    metric=\$(echo \$line | cut -d'"' -f4)
-                    value=\$(echo \$line | cut -d'"' -f8)
-
-                    # Determine class based on metric
-                    class="good"
-                    if [[ "\$metric" == "bugs" && "\$value" != "0" ]] || [[ "\$metric" == "vulnerabilities" && "\$value" != "0" ]] || [[ "\$metric" == "code_smells" && "\$value" -gt 5 ]]; then
-                        class="bad"
-                    fi
-
-                    # Format metric name
-                    formatted_metric=\$(echo \$metric | tr '_' ' ' | awk '{for(i=1;i<=NF;i++) \$i=toupper(substr(\$i,1,1)) substr(\$i,2)} 1')
-
-                    echo "<div class='metric \$class'><h3>\$formatted_metric</h3><p>\$value</p></div>" >> sonar-report.html
-                done
-                echo '</div>' >> sonar-report.html
-
-                # Add screenshot/link
-                echo "<h2>SonarQube Dashboard</h2>" >> sonar-report.html
-                echo "<p>View full report at: <a href='http://${IP_ADDRESS}:9000/dashboard?id=\$PROJECT_KEY' target='_blank'>SonarQube Dashboard</a></p>" >> sonar-report.html
-                echo '</body></html>' >> sonar-report.html
-            """
                         }
                     }
                     post {
                         success {
-                            // Archive the HTML report
-                            archiveArtifacts artifacts: 'sonar-report.html', fingerprint: true
-
-                        // If you have the HTML Publisher plugin installed, you can also use:
-                        // publishHTML([
-                        //     allowMissing: false,
-                        //     alwaysLinkToLastBuild: true,
-                        //     keepAll: true,
-                        //     reportDir: '.',
-                        //     reportFiles: 'sonar-report.html',
-                        //     reportName: 'SonarQube Analysis Report'
-                        // ])
+                            sh 'echo SonarQube results available at 9000/?id=Demo'
                         }
                     }
                 }
@@ -236,7 +183,11 @@ pipeline {
                         docker pull $DOCKER_USER/$IMAGE_NAME:$TAG
                         docker run --name $IMAGE_NAME -di -p 8081:8080 $DOCKER_USER/$IMAGE_NAME:$TAG
                     '''
-                    sh 'echo Deployment is up on 8081/demo'
+                }
+            }
+            post {
+                success {
+                    sh 'echo Deployment is available at 8081/demo'
                 }
             }
         }
