@@ -38,7 +38,7 @@ Then in the output you should find the key (highlighted, unique per user):
 
 10. "Create First Admin User" Page -> Fill in your desired credentials -> `Save and Continue` -> save your Jenkins URL (we need this later) -> `Save and Finish` -> `Start using Jenkins`
 <p align="center">
-<table>
+<table border="0">
   <tr>
     <td><img src="media/createFirstAdminUser.png" width="300px"></td>
     <td style="font-size: 40px; text-align: center;">→</td>
@@ -53,7 +53,7 @@ Then in the output you should find the key (highlighted, unique per user):
 11. Docker Pipeline Installation .. Dashboard -> Manage Jenkins -> Plugins -> Available Plugins -> Docker Pipeline    
 
 <p align="center">
-<table>
+<table border="0">
   <tr>
     <td><img src="media/manage.png" width="200px"></td>
     <td style="font-size: 40px; text-align: center;">→</td>
@@ -75,7 +75,7 @@ $ docker compose restart jenkins
 14. Dashboard -> `New Item` -> Choose Job name -> `Pipeline` -> `OK`
 
 <p align="center">
-<table>
+<table border="0">
   <tr>
     <td><img src="media/newItem.png" width="300px"></td>
     <td style="font-size: 40px; text-align: center;">→</td>
@@ -91,7 +91,7 @@ $ docker compose restart jenkins
 16. Definition Section -> Switch `Pipeline script` to `Pipeline script from SCM` -> Change SCM from `None` to `Git` -> then put your forked repo's URL in the `Repository URL` field -> `Apply` -> `Save` :
 
 <p align="center">
-<table>
+<table border="0">
   <tr>
     <td><img src="media/def.png" width="800px"></td>
     <td style="font-size: 40px; text-align: center;">→</td>
