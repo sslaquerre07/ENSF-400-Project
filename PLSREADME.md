@@ -39,21 +39,28 @@ Then in the output you should find the key (highlighted, unique per user):
 10. "Create First Admin User" Page -> Fill in your desired credentials -> `Save and Continue` -> save your Jenkins URL (we need this later) -> `Save and Finish` -> `Start using Jenkins`
 <p align="center">
 <table>
-  <img src="media/createFirstAdminUser.png" width="400px" style="vertical-align: middle;">
-  <span style="font-size: 30px; margin: 0 15px;">→</span>
-  <img src="media/saveAndFinish.png" width="400px" style="vertical-align: middle;">
-  <span style="font-size: 30px; margin: 0 15px;">→</span>
-  <img src="media/start.png" width="400px" style="vertical-align: middle;">
+  <tr>
+    <td><img src="media/createFirstAdminUser.png" width="300px"></td>
+    <td style="font-size: 40px; text-align: center;">→</td>
+    <td><img src="media/saveAndFinish.png" width="300px"></td>
+    <td style="font-size: 40px; text-align: center;">→</td>
+    <td><img src="media/start.png" width="300px"></td>
+  </tr>
 </table>
 </p>
 
 
 11. Docker Pipeline Installation .. Dashboard -> Manage Jenkins -> Plugins -> Available Plugins -> Docker Pipeline    
+
 <p align="center">
-  <img src="media/manage.png" width="200px" style="vertical-align: middle;">
-  <span style="font-size: 30px; margin: 0 15px;">→</span>
-  <img src="media/plugins.png" width="550px" style="vertical-align: middle;">
-  <span style="font-size: 30px; margin: 0 15px;">→</span>
+<table>
+  <tr>
+    <td><img src="media/manage.png" width="200px"></td>
+    <td style="font-size: 40px; text-align: center;">→</td>
+    <td><img src="media/plugins.png" width="550px"></td>
+    <td style="font-size: 40px; text-align: center;">→</td>
+  </tr>
+</table>
 </p>
 
 <p align='center'><img src='media/install.png' width='1200px'></img></p>
@@ -68,9 +75,13 @@ $ docker compose restart jenkins
 14. Dashboard -> `New Item` -> Choose Job name -> `Pipeline` -> `OK`
 
 <p align="center">
-  <img src="media/newItem.png" width="300px" style="vertical-align: middle;">
-  <span style="font-size: 30px; margin: 0 15px;">→</span>
-  <img src="media/pipeline.png" width="410px" style="vertical-align: middle;">
+<table>
+  <tr>
+    <td><img src="media/newItem.png" width="300px"></td>
+    <td style="font-size: 40px; text-align: center;">→</td>
+    <td><img src="media/pipeline.png" width="410px"></td>
+  </tr>
+</table>
 </p>
 
 15. Under "Triggers", enable `Github hook trigger for GITScm polling` option:
@@ -80,9 +91,13 @@ $ docker compose restart jenkins
 16. Definition Section -> Switch `Pipeline script` to `Pipeline script from SCM` -> Change SCM from `None` to `Git` -> then put your forked repo's URL in the `Repository URL` field -> `Apply` -> `Save` :
 
 <p align="center">
-  <img src="media/def.png" width="800px" style="vertical-align: middle;">
-  <span style="font-size: 30px; margin: 0 15px;">→</span>
-  <img src="media/applyAndSave.png" width="400px" style="vertical-align: middle;">
+<table>
+  <tr>
+    <td><img src="media/def.png" width="800px"></td>
+    <td style="font-size: 40px; text-align: center;">→</td>
+    <td><img src="media/applyAndSave.png" width="410px"></td>
+  </tr>
+</table>
 </p>
 
 17. Now Jenkins is set up.
