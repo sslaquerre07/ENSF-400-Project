@@ -210,3 +210,26 @@ $ docker compose restart jenkins
 9. Clicking `Test connection` should output `Credentials verified for user {your github username}, rate limit: XXXX`, which indicates you successfully created the connection. 
 
 <p align='center'><img src='media/jenkinsTestPass.png' width='1300px'></img></p>
+
+## Creating a webhook on the GitHub repo
+
+1. Go to your forked repository's webpage, at the top right click `Settings` -> click `Webhooks` -> click `Add webhook`
+
+<p align='center'><img src='media/githubAddWebhook.png' width='1000px'></img></p>
+
+2. Payload URL: `{your Jenkins' GUI URL}/github-webhook/` -> Content Type: `application/json` -> Select `Let me select individual events`
+
+<p align='center'><img src='media/githubWebhook.png' width='1000px'></img></p>
+
+3. Select the events: `Pushes` and `Pull Requests` -> scroll down and click `Add Webhook`
+<p align="center">
+<table border="0">
+  <tr>
+    <td><img src="media/githubWebhookEvents.png" width="800px"></td>
+    <td style="font-size: 40px; text-align: center;">+</td>
+    <td><img src="media/githubAddWebhookButton.png" width="600px"></td>
+  </tr>
+</table>
+</p>
+
+4. Now committing anything / creating pull requests will autobuild your Jenkins file inside your Jenkins container.
