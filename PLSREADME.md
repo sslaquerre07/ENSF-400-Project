@@ -38,11 +38,13 @@ Then in the output you should find the key (highlighted, unique per user):
 
 10. "Create First Admin User" Page -> Fill in your desired credentials -> `Save and Continue` -> save your Jenkins URL (we need this later) -> `Save and Finish` -> `Start using Jenkins`
 <p align="center">
+<table>
   <img src="media/createFirstAdminUser.png" width="400px" style="vertical-align: middle;">
   <span style="font-size: 30px; margin: 0 15px;">→</span>
   <img src="media/saveAndFinish.png" width="400px" style="vertical-align: middle;">
   <span style="font-size: 30px; margin: 0 15px;">→</span>
   <img src="media/start.png" width="400px" style="vertical-align: middle;">
+</table>
 </p>
 
 
