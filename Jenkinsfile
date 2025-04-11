@@ -88,7 +88,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh './gradlew test'
+                    sh './gradlew check'
                 }
             }
             post {
