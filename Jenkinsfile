@@ -35,6 +35,7 @@ pipeline {
                 // ])
 
                 // Start SonarQube Server
+                sh '(docker stop sonarqube && docker rm sonarqube) || true'
                 sh 'docker run -d --name sonarqube -p 9000:9000 sonarqube:9.2-community'
 
                 // Login to Docker
@@ -79,7 +80,7 @@ pipeline {
         }
 
         //Running the tests:
-        stage('Unit Tests') {
+        stage('Tests') {
             agent {
                 docker {
                     image 'gradle:7.6.1-jdk11'
@@ -246,7 +247,6 @@ pipeline {
         cleanup {
             // Clean up Docker resources
             sh 'docker system prune -f || true'
-            sh '(docker stop sonarqube && docker rm sonarqube) || true'
         }
     }
 }
