@@ -233,3 +233,9 @@ $ docker compose restart jenkins
 </p>
 
 4. Now committing anything / creating pull requests will autobuild your Jenkins file inside your Jenkins container.
+
+## Setting up the Jenkinsfile
+
+1. Navigate to the Jenkinsfile file and change the DOCKER_USER and DOCKER_PASS to your actual docker username and password located in Lines 9 and 10 respectively.
+
+<p align='center'><img src='media/vscodeCred.png' width='1000px'></img></p>
