@@ -155,7 +155,7 @@ $ docker compose restart jenkins
 
 ## Creating a GitHib Server on Jenkins using a Github Personal Access Token
 
-1. Log in into Githib -> then navigate to `https://github.com/settings/tokens` -> `Generate new token` -> Select ` Generate new token (classic)
+1. Log in into Githib -> then navigate to `https://github.com/settings/tokens` -> `Generate new token` -> Select ` Generate new token (classic)`
 
 <p align='center'><img src='media/githubGenNewToken.png' width='750px'></img></p>
 
@@ -170,3 +170,43 @@ $ docker compose restart jenkins
   </tr>
 </table>
 </p>
+
+3. Click `Generate token`
+
+<p align='center'><img src='media/githubGenButton.png' width='750px'></img></p>
+
+4. Click the copy icon to copy the token (this will be unaccessible after you leave the webpage so save it somewhere safe)
+
+<p align='center'><img src='media/githubActualToken.png' width='750px'></img></p>
+
+5. Navigate back to the Jenkins GUI -> Dashboard -> Manage Jenkins -> System
+
+<p align='center'><img src='media/jenkinsSystem.png' width='900px'></img></p>
+
+6. Scroll down to the `Github` section of the page -> `Add Github Server` -> `Github Server`
+
+<p align='center'><img src='media/jenkinsGithubServer.png' width='300px'></img></p>
+
+7. `API URL`: https://api.github.com -> Under `Credentials`, click `+ Add`
+
+<p align='center'><img src='media/jenkinsGithubURL.png' width='800px'></img></p>
+
+8. click `Jenkins` -> Kind: `Secret text` -> Secret: (paste your previously copied github PAT token) -> id: github-pat
+
+<p align="center">
+<table border="0">
+  <tr>
+    <td><img src="media/credentialsAddJenkins.png" width="500px"></td>
+    <td style="font-size: 40px; text-align: center;">+</td>
+    <td><img src="media/jenkinsAddInfo.png" width="800px"></td>
+  </tr>
+</table>
+</p>
+
+8. Under `Credentials` select `github-pat`
+
+<p align='center'><img src='media/jenkinsCredSet.png' width='1300px'></img></p>
+
+9. Clicking `Test connection` should output `Credentials verified for user {your github username}, rate limit: XXXX`, which indicates you successfully created the connection. 
+
+<p align='center'><img src='media/jenkinsTestPass.png' width='1300px'></img></p>
