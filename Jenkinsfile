@@ -1,16 +1,61 @@
-pipeline{
+/* groovylint-disable BlockEndsWithBlankLine, LineLength, NestedBlockDepth */
+pipeline {
     agent any
 
-    // Set environment variables for the image
+    // Set environment variables for the Jenkins container
     environment {
         IMAGE_NAME = 'ensf400-project'
         TAG = 'latest'
-        CREDENTIALS_ID = 'dockerhub-creds'
         DOCKER_USER = 'bhavna2309'
         DOCKER_PASS = 'Calgary2309'
+        IP_ADDRESS = sh(script: '''
+        # First check if host.docker.internal can be resolved
+        if getent hosts host.docker.internal &> /dev/null; then
+            # If it resolves, then ping to verify connectivity
+            if ping -c 1 -W 1 host.docker.internal &> /dev/null; then
+                echo "host.docker.internal"
+            else
+                # Hostname resolves but ping fails - still use fallback
+                echo "172.18.0.1"
+            fi
+        else
+            # Hostname doesn't resolve at all - use fallback immediately
+            echo "172.18.0.1"
+        fi
+        ''', returnStdout: true).trim()
     }
 
-    stages{
+    stages {
+        stage('Setup') {
+            steps {
+                // // Use checkout SCM instead of git clone to avoid directory conflicts
+                // checkout([$class: 'GitSCM',
+                //     branches: [[name: '*/jenkinsSetup']],
+                //     userRemoteConfigs: [[url: 'https://github.com/sslaquerre07/ENSF-400-Project/']]
+                // ])
+
+                // Start SonarQube Server
+                sh 'docker run -d --name sonarqube -p 9000:9000 sonarqube:9.2-community'
+
+                // Login to Docker
+                sh """echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin"""
+
+                // Shutdown current deployment (if up)
+                sh """(docker stop ${IMAGE_NAME} && docker rm ${IMAGE_NAME}) || true"""
+
+            }
+        }
+
+        stage('Smoke Test') {
+            steps {
+                script {
+                    sh 'hostname'
+                    sh 'ls'
+                    sh 'echo $IP_ADDRESS'
+                }
+            }
+        }
+
         // Stage for building the image
         stage('Build') {
             steps {
@@ -25,29 +70,26 @@ pipeline{
         stage('Push to DockerHub') {
             steps {
                 script {
-                    // Use DockerHub credentials (the ID you gave it in Jenkins)
-                    withCredentials([usernamePassword(credentialsId: CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        // Log in to DockerHub using the credentials
-                        sh '''
-                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                            docker build -t $DOCKER_USER/$IMAGE_NAME:$TAG .
-                            docker push $DOCKER_USER/$IMAGE_NAME:$TAG
-                        '''
-                    }
+                    sh '''
+                        docker build -t $DOCKER_USER/$IMAGE_NAME:$TAG .
+                        docker push $DOCKER_USER/$IMAGE_NAME:$TAG
+                    '''
                 }
             }
         }
-
 
         //Running the tests:
         stage('Unit Tests') {
             agent {
                 docker {
                     image 'gradle:7.6.1-jdk11'
+                    reuseNode true  // This ensures the same workspace is used
                 }
             }
             steps {
-                sh './gradlew test'
+                script {
+                    sh './gradlew test'
+                }
             }
             post {
                 always {
@@ -61,6 +103,7 @@ pipeline{
             agent {
                 docker {
                     image 'gradle:7.6.1-jdk11'
+                    reuseNode true  // This ensures the same workspace is used
                 }
             }
             steps {
@@ -76,13 +119,53 @@ pipeline{
             agent {
                 docker {
                     image 'gradle:7.6.1-jdk11'
+                    reuseNode true  // This ensures the same workspace is used
                 }
             }
             steps {
                 // Generate JavaDocs
                 sh './gradlew javadoc'
-                // Archive the generated JavaDocs as build artifacts
-                archiveArtifacts allowEmptyArchive: true, artifacts: 'build/docs/javadoc/**'
+            }
+            post {
+                success {
+                    // Archive the generated JavaDocs as build artifacts
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'build/docs/javadoc/**'
+                }
+            }
+        }
+
+        // Use a docker in docker container to run sonarcube (can't figure out)
+        stage('Static Analysis') {
+            stages {
+                stage('SonarQube Auth') {
+                    steps {
+                        script {
+                            sh 'echo "Waiting for SonarQube to start..." && sleep 80'
+
+                            // Remotely change login username and password
+                            sh """
+                        curl -X POST "http://${IP_ADDRESS}:9000/api/users/change_password" \
+                        -H "Content-Type: application/x-www-form-urlencoded" \
+                        -d "login=admin&previousPassword=admin&password=password" \
+                        -u admin:admin
+                    """
+                        }
+                    }
+                }
+
+                stage('SonarQube Analysis') {
+                    agent {
+                        docker {
+                            image 'gradle:7.6.1-jdk11'
+                            reuseNode true  // This ensures the same workspace is used
+                        }
+                    }
+                    steps {
+                        script {
+                            sh "./gradlew sonarqube -Dsonar.host.url=http://${IP_ADDRESS}:9000"
+                        }
+                    }
+                }
             }
         }
 
@@ -90,41 +173,22 @@ pipeline{
         stage('Deploy Application') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh '''
-                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                            docker pull $DOCKER_USER/$IMAGE_NAME:$TAG
-                            docker run -di -p 8081:8080 $DOCKER_USER/$IMAGE_NAME:$TAG
-                        '''
-                    }
+                    sh '''
+                        docker pull $DOCKER_USER/$IMAGE_NAME:$TAG
+                        docker run --name $IMAGE_NAME -di -p 8081:8080 $DOCKER_USER/$IMAGE_NAME:$TAG
+                    '''
+                    sh 'echo Deployment is up on 8081/demo'
                 }
             }
         }
 
-        //Use a docker in docker container to run sonarcube (can't figure out)
-        stage('Static Analysis') {
-            agent {
-                docker {
-                    image 'docker:20.10.7-dind'
-                    args '--privileged'
-                }
-            }
-            environment {
-                SONAR_HOST_URL = 'http://localhost:9000'
-                SONAR_TOKEN = credentials('your-sonar-token-id')  // Jenkins credentials
-            }
-            steps {
-                script {
-                    sh '''
-                        docker run -d --name sonarqube -p 9000:9000 sonarqube:9.2-community
-                        echo "Waiting for SonarQube to be ready..."
-                        while ! curl -s http://localhost:9000/api/system/health | grep '"status":"UP"'; do sleep 5; done
-                    '''
-                    sh './gradlew sonarqube -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN'
-                    sh 'docker stop sonarqube'
-                    sh 'docker rm sonarqube'
-                }
-            }
+    }
+
+    post {
+        cleanup {
+            // Clean up Docker resources
+            sh 'docker system prune -f || true'
+            sh '(docker stop sonarqube && docker rm sonarqube) || true'
         }
     }
 }
