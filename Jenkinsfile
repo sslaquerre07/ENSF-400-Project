@@ -5,9 +5,9 @@ pipeline{
     environment {
         IMAGE_NAME = 'ensf400-project'
         TAG = 'latest'
-        CREDENTIALS_ID = 'docker-pat'
-        DOCKER_USER = 'theagentp'
-        DOCKER_PASS = 'GreenBean4066!'
+        CREDENTIALS_ID = 'dockerhub-creds'
+        DOCKER_USER = 'bhavna2309'
+        DOCKER_PASS = 'Calgary2309'
     }
 
     stages{
