@@ -101,3 +101,54 @@ $ docker compose restart jenkins
 </p>
 
 17. Now Jenkins is set up.
+
+## Connecting Docker to Jenkins
+
+1. Log in to your Docker Hub
+
+2. Top right, click your profile's icon -> `Account Settings`, this should redirect you to your app.docker.com/settings WebPage
+
+<p align='center'><img src='media/settings.png' width='300px'></img></p>
+
+3. `Personal Access Tokens` -> `Generate New Token` -> Access Token Description: `Jenkins` -> Access permissions: `Read & Write` -> `Generate`
+
+<p align="center">
+<table border="0">
+  <tr>
+    <td><img src="media/dockerPAT.png" width="300px"></td>
+    <td style="font-size: 40px; text-align: center;">→</td>
+    <td><img src="media/generateNewTokenDocker.png" width="900px"></td>
+    <td style="font-size: 40px; text-align: center;">→</td>
+    <td><img src="media/getToken.png" width="500px"></td>
+  </tr>
+</table>
+</p>
+
+4. Copy your token:
+<p align='center'><img src='media/dockerToken.png' width='500px'></img></p>
+
+5. Go back to your Jenkins GUI -> Dashboard -> Manage Jenkins -> Search `Credentials` -> click `(global)`
+
+<p align="center">
+<table border="0">
+  <tr>
+    <td><img src="media/jenkinsCredentials.png" width="750px"></td>
+    <td style="font-size: 40px; text-align: center;">→</td>
+    <td><img src="media/jenkinsGlobal.png" width="700px"></td>
+  </tr>
+</table>
+</p>
+
+6. `+ Add Credentials` -> `Username with password` -> Scope: `Global` -> Username: (insert your docker username here) -> `treat username as secret` -> Password: (paste your previously copied docker PAT) -> ID: docker-pat -> Description: docker-pat
+
+<p align="center">
+<table border="0">
+  <tr>
+    <td><img src="media/jenkinsAdd.png" width="750px"></td>
+    <td style="font-size: 40px; text-align: center;">→</td>
+    <td><img src="media/jenkinsCreate.png" width="700px"></td>
+  </tr>
+</table>
+</p>
+
+7. Now, your Jenkins should be properly connected to your Docker account.
