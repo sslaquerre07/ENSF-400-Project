@@ -152,3 +152,21 @@ $ docker compose restart jenkins
 </p>
 
 7. Now, your Jenkins should be properly connected to your Docker account.
+
+## Creating a GitHib Server on Jenkins using a Github Personal Access Token
+
+1. Log in into Githib -> then navigate to `https://github.com/settings/tokens` -> `Generate new token` -> Select ` Generate new token (classic)
+
+<p align='center'><img src='media/githubGenNewToken.png' width='750px'></img></p>
+
+2. Name: Jenkins -> Select These Scopes: [repo, workflow, admin:org, admin:repo_hook, codespace]
+
+<p align="center">
+<table border="0">
+  <tr>
+    <td><img src="media/githubToken1.png" width="750px"></td>
+    <td style="font-size: 40px; text-align: center;">+</td>
+    <td><img src="media/githubToken2.png" width="800px"></td>
+  </tr>
+</table>
+</p>
